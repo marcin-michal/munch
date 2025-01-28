@@ -31,7 +31,6 @@ export const DailyDietUpsert = () => {
 
       await UpsertDailyDiet(dailyDiet);
     } catch (e) {
-      console.error(e);
       setError("Error saving daily diet");
     }
 

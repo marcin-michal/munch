@@ -2,7 +2,6 @@ package repository
 
 import (
 	"errors"
-	"fmt"
 
 	"github.com/google/uuid"
 	"github.com/marcin-michal/munch/backend/database"
@@ -35,7 +34,6 @@ func (mr *MealRepository) GetMeals() ([]models.MealDTO, error) {
 }
 
 func (mr *MealRepository) GetMealsByName(name string) ([]models.MealDTO, error) {
-	fmt.Println("name: ", name)
 	var meals []models.Meal
 
 	wildcardName := "%" + name + "%"
@@ -58,7 +56,7 @@ func (mr *MealRepository) CreateMeal(mealDTO models.MealDTO) (models.MealDTO, er
 	if len(meal.Components) > 0 {
 		meal.Nutritions = calculateComponentsNutritionPer100g(meal.Components)
 	}
-	fmt.Println("meal: ", meal.Nutritions.Calories)
+
 	res := database.DB.Create(&meal)
 
 	return models.ConvertMealToDTO(meal), res.Error

@@ -2,7 +2,6 @@ package repository
 
 import (
 	"errors"
-	"fmt"
 	"time"
 
 	"github.com/google/uuid"
@@ -28,7 +27,6 @@ func (tr *TrackingRepository) GetDailyDiet(date string) (models.DailyDietDTO, er
 }
 
 func (tr *TrackingRepository) UpsertDailyDiet(dailyDietDTO models.DailyDietDTO) (models.DailyDietDTO, error) {
-	fmt.Println("dailyDietDTO: ", dailyDietDTO)
 	valid, err := isValidDate(dailyDietDTO.Date)
 	if !valid {
 		return models.DailyDietDTO{}, err
@@ -38,7 +36,7 @@ func (tr *TrackingRepository) UpsertDailyDiet(dailyDietDTO models.DailyDietDTO) 
 	if err != nil {
 		return models.DailyDietDTO{}, err
 	}
-	fmt.Println("dailyDiet: ", dailyDiet)
+
 	date := dailyDietDTO.Date
 
 	res := database.DB.Where("date = ?", date).First(&dailyDiet)
@@ -46,7 +44,7 @@ func (tr *TrackingRepository) UpsertDailyDiet(dailyDietDTO models.DailyDietDTO) 
 		dailyDiet = models.DailyDiet{
 			Date: date,
 		}
-		fmt.Printf("not found")
+
 		res = database.DB.Create(&dailyDiet)
 	} else if res.Error == nil {
 		res = database.DB.Save(&dailyDiet)
@@ -55,7 +53,7 @@ func (tr *TrackingRepository) UpsertDailyDiet(dailyDietDTO models.DailyDietDTO) 
 	if res.Error != nil {
 		return models.DailyDietDTO{}, res.Error
 	}
-	fmt.Print("updated: ", dailyDiet)
+
 	return models.ConvertDailyDietToDTO(dailyDiet), res.Error
 }
 
@@ -87,7 +85,7 @@ func (tr *TrackingRepository) CreateRecord(recordDTO models.RecordDTO) (models.R
 	if err != nil {
 		return models.RecordDTO{}, err
 	}
-	fmt.Println("record: ", recordDTO.Meal.Nutritions.Calories)
+
 	res := database.DB.Create(&record)
 
 	return models.ConvertRecordToDTO(record), res.Error
@@ -107,7 +105,6 @@ func (tr *TrackingRepository) UpdateRecord(recordDTO models.RecordDTO) (models.R
 }
 
 func (tr *TrackingRepository) DeleteRecord(id string) error {
-	fmt.Println("id: ", id)
 	parseId, err := uuid.Parse(id)
 	if err != nil {
 		return errors.New("invalid UUID")
@@ -116,7 +113,7 @@ func (tr *TrackingRepository) DeleteRecord(id string) error {
 	record := models.Record{}
 	recordRes := database.DB.First(&record, parseId)
 	mealId := record.MealId
-	fmt.Println("iddd: ", id)
+
 	if recordRes.Error != nil {
 		return recordRes.Error
 	}
@@ -125,9 +122,9 @@ func (tr *TrackingRepository) DeleteRecord(id string) error {
 	if res.Error != nil {
 		return res.Error
 	}
-	fmt.Println("iddddd: ", id)
+
 	updateParentMeals(mealId)
-	fmt.Println("ok: ", id)
+
 	return nil
 }
 
